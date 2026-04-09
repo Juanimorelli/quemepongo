@@ -1,0 +1,6 @@
+{
+  "appId": "com.emilio.quemepongo",
+  "appName": "quemepongo",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}

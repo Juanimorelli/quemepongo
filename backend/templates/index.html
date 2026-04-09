@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quemepongo | Premium</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+    <header>
+        <h1>👕 Quemepongo</h1>
+        <p class="subtitle">AI-Powered Fashion Recommender</p>
+    </header>
+
+    <div class="glass-container">
+        <!-- Tarjeta de Recomendación (Carga asíncrona) -->
+        <div class="glass-card" id="recommendation-card">
+            <div class="card-header">
+                <span>✨ Recomendación del Día</span>
+            </div>
+            
+            <div class="recommendation-content" id="rec-content">
+                <p class="loading-pulse">Analizando tu guardarropa y tendencias...</p>
+            </div>
+
+            <div class="action-bar" style="display: none;" id="feedback-actions">
+                <button class="btn feedback-btn" onclick="sendFeedback(-1)">👎 Otro estilo</button>
+                <button class="btn feedback-btn" onclick="sendFeedback(1)">👍 Me gusta</button>
+            </div>
+        </div>
+
+        <!-- Acciones Globales -->
+        <div class="glass-card" style="text-align: center;">
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+                Las tendencias son generadas usando Gemini 2.0 Flash
+            </p>
+            <button class="btn btn-primary" onclick="updateTrends()" id="btn-trends">
+                🛰️ Actualizar Tendencias AI
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Cargar recomendación al iniciar
+        document.addEventListener('DOMContentLoaded', fetchRecommendation);
+
+        async function fetchRecommendation() {
+            const contentDiv = document.getElementById('rec-content');
+            const actionsDiv = document.getElementById('feedback-actions');
+            
+            try {
+                const response = await fetch('/api/recomendacion');
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    contentDiv.innerHTML = `
+                        <div style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+                            Combiná tu ${data.prenda_base} con:
+                        </div>
+                        <div class="outfit-combo">
+                            un ${data.sugerencia_prenda}
+                        </div>
+                        <div style="font-size: 1rem; color: var(--accent-cyan); margin-top: 0.5rem; font-weight: 600;">
+                            Estilo: ${data.estilo_recomendado}
+                        </div>
+                        <div class="color-swatch-container">
+                            <span>Sugerido en tono ${data.sugerencia_color}</span>
+                        </div>
+                    `;
+                    actionsDiv.style.display = 'flex';
+                } else {
+                    contentDiv.innerHTML = `<p style="color: #FC8181;">${data.message}</p>`;
+                }
+            } catch (error) {
+                contentDiv.innerHTML = `<p style="color: #FC8181;">Error al cargar recomendación. Verifica la base de datos.</p>`;
+            }
+        }
+
+        async function updateTrends() {
+            const btn = document.getElementById('btn-trends');
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = '⏳ Procesando con IA...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/api/tendencias/actualizar', { method: 'POST' });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    alert('Tendencias actualizadas. Recargando recomendaciones.');
+                    fetchRecommendation();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                alert('Error de conexión.');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function sendFeedback(score) {
+            alert(score > 0 ? '¡Genial! Guardaremos tu preferencia.' : 'Entendido. Ajustaremos las sugerencias.');
+            // Aquí iría el POST a /api/feedback
+        }
+    </script>
+</body>
+</html>
