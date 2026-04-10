@@ -7,7 +7,8 @@ function App() {
   const [error, setError] = useState(null)
   const [visionMode, setVisionMode] = useState(false)
   
-  const API_URL = window.location.hostname === 'localhost' ? "http://127.0.0.1:8000" : `http://${window.location.hostname}:8000`
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname.includes('192');
+  const API_URL = isLocal ? `http://${window.location.hostname}:8000` : "";
 
   const fetchRecommendation = async () => {
     setLoading(true)
