@@ -60,6 +60,13 @@ def upload_prenda(payload: PrendaUpload):
     if not vision_data:
          return JSONResponse({"status": "error", "message": "La IA no pudo procesar la foto, intente nuevamente."}, status_code=500)
 
+    # 4. Generación de Arte con Pollinations AI (Text-to-Image)
+    cat_ingles = vision_data.get("categoria", "cloth")
+    col_ingles = vision_data.get("color_hex", "colored")
+    seed = random.randint(1000, 999999)
+    prompt_texto = f"Minimal flat 2D vector icon illustration of a {col_ingles} {cat_ingles} piece of clothing, solid white background, clean simple silhouette isolated"
+    url_arte = f"https://image.pollinations.ai/prompt/{prompt_texto}?nologo=true&seed={seed}&width=400&height=400"
+
     db = SessionLocal()
     try:
         nueva_prenda = Prenda(
@@ -68,14 +75,14 @@ def upload_prenda(payload: PrendaUpload):
             categoria=vision_data.get("categoria", "Desconocido"),
             color_hex=vision_data.get("color_hex", "#000000"),
             formalidad=vision_data.get("formalidad", 5),
-            imagen_url=f"/uploads/{file_id}.jpg"
+            imagen_url=url_arte
         )
         db.add(nueva_prenda)
         db.commit()
     finally:
         db.close()
         
-    return {"status": "success", "prenda": vision_data, "imagen": f"/uploads/{file_id}.jpg"}
+    return {"status": "success", "prenda": vision_data, "imagen": url_arte}
 
 @app.get("/api/recomendacion")
 def generar_recomendacion():
@@ -111,4 +118,4 @@ def trigger_tendencias():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)

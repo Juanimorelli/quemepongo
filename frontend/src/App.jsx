@@ -7,7 +7,7 @@ function App() {
   const [error, setError] = useState(null)
   const [visionMode, setVisionMode] = useState(false)
   
-  const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"
+  const API_URL = window.location.hostname === 'localhost' ? "http://127.0.0.1:8000" : `http://${window.location.hostname}:8000`
 
   const fetchRecommendation = async () => {
     setLoading(true)
@@ -130,10 +130,12 @@ function App() {
                   <p className="text-xl font-bold text-white mb-2">
                     {recommendation.prenda_base.split('(Color:')[0]}
                   </p>
-                  {/* Dynamic Color Badge Request Implemented! */}
-                  <div className="flex items-center justify-center gap-2">
-                     <div className="w-5 h-5 rounded-full shadow-inner border border-white/20" style={{backgroundColor: recommendation.color_base_hex}}></div>
-                     <span className="text-xs text-slate-400 font-mono">{recommendation.color_base_hex}</span>
+                  <div className="flex flex-col items-center justify-center gap-3">
+                     <img src={recommendation.prenda_base_imagen || `https://image.pollinations.ai/prompt/Flat vector minimal icon of ${recommendation.prenda_base}?nologo=true&seed=1`} alt="Prenda" className="w-24 h-24 rounded-2xl shadow-xl border-2 border-white/10 mx-auto" />
+                     <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-full shadow-inner border border-white/20" style={{backgroundColor: recommendation.color_base_hex}}></div>
+                        <span className="text-xs text-slate-400 font-mono">{recommendation.color_base_hex}</span>
+                     </div>
                   </div>
                 </div>
 
@@ -145,12 +147,15 @@ function App() {
 
                 <div>
                   <p className="text-cyan-400 text-sm font-semibold mb-1">Combinar con</p>
-                  <p className="text-2xl font-black bg-gradient-to-br from-white to-slate-400 bg-clip-text text-transparent">
+                  <p className="text-2xl font-black bg-gradient-to-br from-white to-slate-400 bg-clip-text text-transparent mb-3">
                     {recommendation.sugerencia_prenda}
                   </p>
-                  <div className="flex items-center justify-center gap-2 mt-2">
-                     <span className="text-slate-400 font-medium text-sm">en tono</span>
-                     <div className="w-4 h-4 rounded-full shadow-inner border border-white/20" style={{backgroundColor: recommendation.sugerencia_color}}></div>
+                  <div className="flex flex-col items-center justify-center gap-2">
+                     <img src={`https://image.pollinations.ai/prompt/Flat vector minimal icon of ${recommendation.sugerencia_prenda} ${recommendation.sugerencia_color}?nologo=true&seed=2`} alt="Combination" className="w-24 h-24 rounded-2xl shadow-xl border-2 border-white/10 mx-auto" />
+                     <div className="flex items-center gap-2 mt-2">
+                        <span className="text-slate-400 font-medium text-sm">en tono</span>
+                        <div className="w-4 h-4 rounded-full shadow-inner border border-white/20" style={{backgroundColor: recommendation.sugerencia_color}}></div>
+                     </div>
                   </div>
                 </div>
               </div>

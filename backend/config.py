@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # --- Base de Datos ---
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///quemepongo.db")
+DATABASE_URL = "postgresql://postgres:V0KY74aSPRBNFj6k@db.hrdimpnxucgosdlveyfy.supabase.co:5432/postgres"
 
 # --- Google Gemini ---
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")

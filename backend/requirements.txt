@@ -1,6 +1,6 @@
 fastapi
-uvicorn[standard]
+uvicorn
 sqlalchemy
 python-dotenv
-jinja2
 requests
+psycopg2-binary
