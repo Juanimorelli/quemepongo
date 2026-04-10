@@ -22,6 +22,7 @@ class Prenda(Base):
     user_id = Column(String, ForeignKey("usuarios.id"))
     categoria = Column(String) # Chomba, Pantalón, etc.
     color_hex = Column(String)
+    imagen_url = Column(String, nullable=True) # Foto de camara
     formalidad = Column(Integer)
     ultima_vez_usado = Column(DateTime, default=datetime.datetime.utcnow)
     es_favorito = Column(Boolean, default=False)
